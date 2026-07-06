@@ -1,0 +1,16 @@
+# Pinger Supabase-databasen to ganger i uka saa gratis-prosjektet
+# ikke blir satt paa pause (krever ellers aktivitet minst hver 7. dag).
+name: Hold Supabase vaaken
+on:
+  schedule:
+    - cron: "0 6 * * 1,4"   # mandag og torsdag kl. 06:00 UTC
+  workflow_dispatch: {}      # gjoer at du ogsaa kan kjoere den manuelt
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping databasen
+        run: |
+          curl -sf "https://ufzyzcvdslelizhhtjwe.supabase.co/rest/v1/lager?select=id&limit=1" \
+            -H "apikey: sb_publishable_Vc1YOrNim-x47d0dOoBPQA_dtGYj_8r" \
+            -o /dev/null -w "HTTP %{http_code}\n"
