@@ -78,6 +78,9 @@
 	.overfor:disabled{background:#9bb0a3;cursor:default}
 	.fjern{background:var(--gronn);color:#fff;border:0;border-radius:8px;padding:6px 14px;font-size:13px;font-weight:650;cursor:pointer;white-space:nowrap}
 	.fjern:hover{background:var(--gronn-2)}
+	.fjern.rod{background:var(--rod)}
+	.fjern.rod:hover{background:#8f2f2f}
+	.tag.b{background:#dbe7f7;border:1px solid #a9c4e8;color:var(--blaa)}
 	.info{background:var(--gul);border:1px solid var(--gul-kant);border-radius:10px;padding:12px 16px;font-size:14px;margin:0 0 18px}
 	#login{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:10}
 	.login-boks{background:var(--flate);border:1px solid var(--kant);border-radius:14px;padding:30px 28px;width:340px;display:flex;flex-direction:column;gap:12px;box-shadow:0 8px 30px rgba(25,33,46,.08)}
@@ -184,7 +187,7 @@
 		</div>
 		<div class="tblwrap">
 			<table>
-				<thead><tr><th>Reg.nr</th><th>Delenummer</th><th>Beskrivelse</th><th>Plassering</th><th>Mottatt</th><th>Rapportdato</th><th></th></tr></thead>
+				<thead><tr><th>Reg.nr</th><th>Delenummer</th><th>Beskrivelse</th><th>Status</th><th>Plassering</th><th>Mottatt</th><th>Rapportdato</th><th></th></tr></thead>
 				<tbody id="sListe"></tbody>
 			</table>
 		</div>
@@ -364,7 +367,9 @@
 			return bins[y].sort(function(a,b){return a.x-b.x;}).map(function(o){return o.s;}).join(" ").replace(/\s+/g," ").trim();
 		});
 	}
-	var HEADER=/^\s*(\d{7})\s+(\d{9})\s+(\d{2})\/(\d{2})\/(\d{2})\s+(.*)$/, SKROT=/^\s*(\d{4,8})\s*-\s*\d\s+(.*?)\s+SKROTAS\s*$/, ARTNR=/^\s*(\d{4,8})\s*-\s*\d\b/;
+	var HEADER=/^\s*(\d{7})\s+(\d{9})\s+(\d{2})\/(\d{2})\/(\d{2})\s+(.*)$/, ARTNR=/^\s*(\d{4,8})\s*-\s*\d\b/;
+	var STATUSORD="SKROTAS";   // flere statusord kan legges til her senere, adskilt med |
+	var STATUSRE=new RegExp("(?:^|\\s)("+STATUSORD+")\\s*$"), SKROT=new RegExp("^\\s*(\\d{4,8})\\s*-\\s*\\d\\s+(.*?)\\s+("+STATUSORD+")\\s*$");
 
 	function finnReg(t){ for(var i=0;i<t.length;i++){ if(/^[A-Z]{2}\d{5}$/.test(t[i])) return t[i]; } return /^0000\d$/.test(t[3]||"")?t[3]:""; }
 	function parse(linjer){
@@ -375,13 +380,14 @@
 			var h=HEADER.exec(ln);
 			if(h){ dato="20"+h[3]+"-"+h[4]+"-"+h[5]; var t=h[6].split(/\s+/); reg=finnReg(t); if(!reg&&t[1]&&chassisReg[t[1]]) reg=chassisReg[t[1]]; lastArt=""; return; }
 			var af=ARTNR.exec(ln); if(af) lastArt=af[1];
-			if(/SKROTAS\s*$/.test(ln)){
-				var m=SKROT.exec(ln), del, beskr;
+			var stm=STATUSRE.exec(ln);
+			if(stm){
+				var st=stm[1], m=SKROT.exec(ln), del, beskr;
 				if(m){ del=m[1]; beskr=m[2].replace(/(\s+[\d.,\-]+){1,3}\s*$/,"").trim(); }
-				else { del=lastArt; var m2=/^(.*?)\s+SKROTAS\s*$/.exec(ln);
+				else { del=lastArt; var m2=new RegExp("^(.*?)\\s+(?:"+STATUSORD+")\\s*$").exec(ln);
 					beskr=m2?m2[1].replace(/(\s+[\d.,\-]+){1,3}\s*$/,"").trim():""; }
 				if(!del) return;
-				rd.push({reg:reg,del:del,dato:dato,beskr:beskr,noreg:!reg});
+				rd.push({reg:reg,del:del,dato:dato,beskr:beskr,status:st,noreg:!reg});
 			}
 		});
 		return rd;
@@ -427,7 +433,7 @@
 			var l=rader[r.lagerIdx], k=nokkel(l.reg,l.del);
 			if(skrot.some(function(s){ return nokkel(s.reg,s.del)===k; })) return;
 			if(nye.some(function(s){ return nokkel(s.reg,s.del)===k; })) return;
-			nye.push({reg:l.reg,del:l.del,beskr:r.beskr,pl:l.pl,mottatt:l.dato,rapportdato:r.dato});
+			nye.push({reg:l.reg,del:l.del,beskr:r.beskr,status:r.status,pl:l.pl,mottatt:l.dato,rapportdato:r.dato});
 		});
 		if(!nye.length){ overforEl.textContent="Alt lå der fra før ✓"; overforEl.disabled=true; return; }
 		overforEl.disabled=true;
@@ -449,7 +455,7 @@
 			}).then(function(sider){
 				alle=parse([].concat.apply([],sider));
 				if(!alle.length){ rFeil("Fant ingen SKROTAS-linjer. Er dette riktig rapport?"); return; }
-				status.textContent="Ferdig – "+alle.length+" SKROTAS-deler funnet."; resultat.classList.remove("skjult"); tegnR();
+				status.textContent="Ferdig – "+alle.length+" deler funnet."; resultat.classList.remove("skjult"); tegnR();
 			}).catch(function(e){ rFeil("Klarte ikke å lese PDF-en: "+e.message); });
 		};
 		fr.readAsArrayBuffer(file);
@@ -468,13 +474,15 @@
 		tomSkrot.disabled=skrot.length===0;
 		skrotBadge.classList.toggle("skjult",!skrot.length);
 		skrotBadge.textContent=skrot.length;
-		if(!skrot.length){ sListe.innerHTML='<tr><td colspan="7" class="tom-tekst">Ingenting å skrote. Les inn en rapport under «Rapport».</td></tr>'; return; }
+		if(!skrot.length){ sListe.innerHTML='<tr><td colspan="8" class="tom-tekst">Ingenting å skrote. Les inn en rapport under «Rapport».</td></tr>'; return; }
 		sListe.innerHTML="";
 		skrot.forEach(function(s,i){
 			var tr=document.createElement("tr");
-			tr.innerHTML='<td class="num">'+s.reg+'</td><td class="num">'+s.del+'</td><td>'+(s.beskr||"")+'</td>'+
+			var erSkrot=(s.status||"SKROTAS")==="SKROTAS";
+			var stTag=erSkrot?'<span class="tag n">skrotas</span>':'<span class="tag b">'+(s.status||"").toLowerCase()+'</span>';
+			tr.innerHTML='<td class="num">'+s.reg+'</td><td class="num">'+s.del+'</td><td>'+(s.beskr||"")+'</td><td>'+stTag+'</td>'+
 				'<td><span class="pl">'+(s.pl||"")+'</span></td><td class="num">'+(s.mottatt||"")+'</td><td class="num">'+(s.rapportdato||"")+'</td>'+
-				'<td class="slettcell" style="width:110px"><button class="fjern">Fjernet ✓</button></td>';
+				'<td class="slettcell" style="width:110px"><button class="fjern'+(erSkrot?' rod':'')+'">'+(erSkrot?"Skrotet ✓":"Returnert ✓")+'</button></td>';
 			tr.querySelector(".fjern").onclick=function(){
 				sb.from("skroteliste").delete().eq("id",s.id).then(function(res){
 					if(res.error) return dbFeil(res.error);
@@ -541,8 +549,8 @@
 		if(!window.XLSX){ alert("Fikk ikke lastet Excel-modulen. Sjekk at du er på nett og prøv igjen."); return; }
 		var wb=XLSX.utils.book_new();
 		var l=[["Dato","Reg.nr","Delnr","Plassering"]].concat(rader.map(function(r){ return [r.dato,r.reg,r.del,r.pl]; }));
-		var s=[["Reg.nr","Delenummer","Beskrivelse","Plassering","Mottatt","Rapportdato"]].concat(
-			skrot.map(function(r){ return [r.reg,r.del,r.beskr,r.pl,r.mottatt,r.rapportdato]; }));
+		var s=[["Reg.nr","Delenummer","Beskrivelse","Status","Plassering","Mottatt","Rapportdato"]].concat(
+			skrot.map(function(r){ return [r.reg,r.del,r.beskr,r.status||"SKROTAS",r.pl,r.mottatt,r.rapportdato]; }));
 		XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(l),"Lager");
 		XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(s),"Skroteliste");
 		XLSX.writeFile(wb,"garanti-retur-"+idag()+".xlsx");
