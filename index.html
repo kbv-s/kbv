@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Garanti & retur</title>
+<style>
+	:root{
+		--blaa:#1F3864; --blaa-2:#2f4f86; --bg:#eef1f5; --flate:#ffffff; --kant:#d7dde6;
+		--tekst:#19212e; --svak:#64707f; --gronn:#1f7a43; --gronn-2:#156335; --rod:#b23b3b;
+		--gul:#fff2cc; --gul-kant:#e6cf86;
+		--mono:ui-monospace,"SFMono-Regular","Cascadia Mono",Consolas,monospace;
+	}
+	*{box-sizing:border-box}
+	html,body{margin:0}
+	body{font:15px/1.45 -apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--tekst)}
+	.bar{background:var(--blaa);color:#fff;padding:0 22px;display:flex;align-items:center;gap:26px}
+	.bar h1{font-size:17px;margin:0;font-weight:650;letter-spacing:.02em;padding:13px 0}
+	.faner{display:flex;gap:4px;align-self:flex-end}
+	.fane{background:none;border:0;color:rgba(255,255,255,.7);font:inherit;font-weight:600;
+		padding:13px 16px;cursor:pointer;border-bottom:3px solid transparent}
+	.fane:hover{color:#fff}
+	.fane.aktiv{color:#fff;border-bottom-color:#fff}
+	.fane .badge{background:#e0a800;color:#1c1c1c;border-radius:999px;font-size:11px;font-weight:700;padding:1px 7px;margin-left:6px;vertical-align:1px}
+	.wrap{max-width:860px;margin:0 auto;padding:22px}
+	.skjult{display:none !important}
+	.f{display:flex;flex-direction:column;gap:5px}
+	.f label{font-size:12px;font-weight:600;color:var(--svak)}
+	.f input,.f select{font-size:16px;padding:10px 12px;border:1px solid var(--kant);border-radius:9px;
+		background:#fbfcfe;color:var(--tekst);font-family:var(--mono);letter-spacing:.02em;height:42px}
+	.f select{font-family:inherit;cursor:pointer}
+	.f input:focus,.f select:focus{outline:2px solid var(--blaa-2);outline-offset:1px;border-color:var(--blaa-2)}
+	.f input.advar{border-color:#d9a400;background:#fffbef}
+	.handlinger{display:flex;gap:10px}
+	.kopi{background:var(--blaa);color:#fff;border:0;border-radius:9px;padding:9px 18px;font-size:14px;font-weight:650;cursor:pointer}
+	.kopi:hover{background:var(--blaa-2)}
+	.kopi.ok{background:var(--gronn)}
+	.kopi:disabled{background:#9aa6b6;cursor:default}
+	.tom-knapp{background:var(--flate);color:var(--rod);border:1px solid #e3b9b9;border-radius:9px;padding:9px 16px;font-size:14px;font-weight:600;cursor:pointer}
+	.tom-knapp:disabled{opacity:.5;cursor:default}
+	.tblwrap{background:var(--flate);border:1px solid var(--kant);border-radius:12px;overflow:hidden}
+	table{border-collapse:collapse;width:100%;font-size:14px}
+	th,td{padding:9px 14px;text-align:left;border-bottom:1px solid #eef1f5}
+	th{background:var(--blaa);color:#fff;font-weight:600;font-size:12.5px;letter-spacing:.02em}
+	td.num{font-family:var(--mono)}
+	td .pl{font-size:12px;color:#fff;background:var(--blaa-2);padding:2px 9px;border-radius:999px}
+	tbody tr:last-child td{border-bottom:0}
+	.tom-tekst{color:var(--svak);font-size:14px;text-align:center;padding:30px}
+	.liste-topp{display:flex;align-items:center;justify-content:space-between;margin:24px 2px 10px;flex-wrap:wrap;gap:10px}
+	.liste-topp h2{font-size:13px;margin:0;font-weight:650;color:var(--svak);text-transform:uppercase;letter-spacing:.05em}
+	.tag{font-size:11px;font-weight:600;padding:2px 7px;border-radius:99px;display:inline-block}
+	.tag.n{background:#f7d9d9;border:1px solid #e3a3a3;color:var(--rod)}
+	.tag.g{background:#d9f0e2;border:1px solid #9fd4b4;color:var(--gronn)}
+	.entry{background:var(--flate);border:1px solid var(--kant);border-radius:12px;padding:16px 18px;display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end}
+	#reg{width:128px;text-transform:uppercase}#del{width:140px}#pl{width:140px}
+	.idag{font-family:var(--mono);font-size:16px;padding:10px 12px;border:1px solid var(--kant);border-radius:9px;background:#f3f5f8;color:var(--svak);height:42px}
+	.legg{background:var(--gronn);color:#fff;border:0;border-radius:10px;padding:11px 22px;font-size:15px;font-weight:700;cursor:pointer;height:42px}
+	.legg:hover{background:var(--gronn-2)}
+	.legg:disabled{background:#9bb0a3;cursor:default}
+	#mListe tr{cursor:pointer}
+	#mListe tr:hover{background:#f5f8fc}
+	.idx{color:var(--svak);font-family:var(--mono);width:34px}
+	.slettcell{width:40px;text-align:center}
+	.slett{background:none;border:0;color:var(--rod);font-size:19px;line-height:1;cursor:pointer;padding:2px 6px}
+	#drop{display:block;max-width:520px;margin:0 auto;padding:34px 24px;text-align:center;cursor:pointer;border:2px dashed var(--kant);border-radius:12px;background:var(--flate);transition:border-color .15s,background .15s}
+	#drop:hover{border-color:var(--blaa-2)}
+	#drop.hot{border-color:var(--blaa);background:#eef2f9}
+	#drop .ikon{font-size:30px;line-height:1}
+	#drop b{color:var(--blaa)}
+	#drop small{display:block;color:var(--svak);margin-top:6px;font-size:13px}
+	#fil{display:none}
+	.status{margin:14px 2px;font-size:14px;color:var(--svak);min-height:20px}
+	.status.feil{color:var(--rod)}
+	.tall{display:flex;gap:22px;margin:6px 2px 16px;flex-wrap:wrap}
+	.tall .t{font-size:14px}.tall .t b{font-size:20px;font-weight:650;display:block;color:var(--blaa)}
+	.tall .t.muted b{color:var(--svak)}
+	tr.noreg td{background:#fdecec}
+	.overfor{background:var(--gronn);color:#fff;border:0;border-radius:10px;padding:11px 22px;font-size:15px;font-weight:700;cursor:pointer}
+	.overfor:hover{background:var(--gronn-2)}
+	.overfor:disabled{background:#9bb0a3;cursor:default}
+	.fjern{background:var(--gronn);color:#fff;border:0;border-radius:8px;padding:6px 14px;font-size:13px;font-weight:650;cursor:pointer;white-space:nowrap}
+	.fjern:hover{background:var(--gronn-2)}
+	.info{background:var(--gul);border:1px solid var(--gul-kant);border-radius:10px;padding:12px 16px;font-size:14px;margin:0 0 18px}
+	#login{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:10}
+	.login-boks{background:var(--flate);border:1px solid var(--kant);border-radius:14px;padding:30px 28px;width:340px;display:flex;flex-direction:column;gap:12px;box-shadow:0 8px 30px rgba(25,33,46,.08)}
+	.login-boks h2{margin:0 0 4px;font-size:18px;color:var(--blaa)}
+	.login-boks input{font-size:16px;padding:11px 12px;border:1px solid var(--kant);border-radius:9px;background:#fbfcfe}
+	.login-boks input:focus{outline:2px solid var(--blaa-2);outline-offset:1px}
+	.login-boks button{background:var(--blaa);color:#fff;border:0;border-radius:9px;padding:11px;font-size:15px;font-weight:650;cursor:pointer}
+	.login-boks button:hover{background:var(--blaa-2)}
+	.login-boks button:disabled{background:#9aa6b6;cursor:default}
+	.login-feil{color:var(--rod);font-size:13px;min-height:18px}
+	.oppsett-info{background:var(--gul);border:1px solid var(--gul-kant);border-radius:9px;padding:10px 12px;font-size:13px;line-height:1.5}
+	.loggut{margin-left:auto;background:none;border:1px solid rgba(255,255,255,.45);color:#fff;border-radius:8px;padding:6px 14px;font-size:13px;font-weight:600;cursor:pointer}
+	.loggut:hover{background:rgba(255,255,255,.12)}
+</style>
+</head>
+<body>
+	<div id="login">
+		<div class="login-boks">
+			<h2>Garanti &amp; retur</h2>
+			<div id="oppsett" class="oppsett-info skjult"><b>Oppsett mangler:</b> Åpne denne fila i et tekstprogram og lim inn <code>SUPABASE_URL</code> og <code>SUPABASE_KEY</code> øverst i &lt;script&gt;-delen. Se OPPSETT-SUPABASE.md.</div>
+			<input id="epost" type="email" placeholder="E-post" autocomplete="username">
+			<input id="passord" type="password" placeholder="Passord" autocomplete="current-password">
+			<button id="logginn">Logg inn</button>
+			<div class="login-feil" id="loginFeil"></div>
+		</div>
+	</div>
+	<div class="bar">
+		<h1>Garanti &amp; retur</h1>
+		<div class="faner">
+			<button class="fane aktiv" data-view="mottak">Lager</button>
+			<button class="fane" data-view="rapport">Rapport</button>
+			<button class="fane" data-view="skrot">Skroteliste<span class="badge skjult" id="skrotBadge"></span></button>
+		</div>
+		<button class="loggut skjult" id="loggut">Logg ut</button>
+	</div>
+
+	<!-- ===================== MOTTAK ===================== -->
+	<div class="wrap" id="view-mottak">
+		<div class="entry">
+			<div class="f"><label>Dato</label><div class="idag" id="idag"></div></div>
+			<div class="f"><label for="reg">Reg.nr</label><input id="reg" type="text" autocapitalize="characters" autocorrect="off" autocomplete="off" spellcheck="false" placeholder="AA12345"></div>
+			<div class="f"><label for="del">Delenummer</label><input id="del" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" placeholder="8 siffer"></div>
+			<div class="f"><label for="pl">Plassering</label>
+				<select id="pl">
+					<option value="Liten">1 – Liten</option>
+					<option value="Medium">2 – Medium</option>
+					<option value="Stor">3 – Stor</option>
+				</select>
+			</div>
+			<button class="legg" id="legg">Legg til</button>
+		</div>
+
+		<div class="liste-topp">
+			<h2 id="antall">På lager – 0 deler</h2>
+			<div class="handlinger">
+				<button class="kopi" id="importer">Importer</button>
+				<button class="kopi" id="eksportL">Last ned Excel</button>
+				<button class="tom-knapp" id="tomliste" disabled>Tøm</button>
+				<input type="file" id="importFil" accept=".xlsx,.xls,.csv,.txt" style="display:none">
+			</div>
+		</div>
+		<div class="tblwrap">
+			<table>
+				<thead><tr><th class="idx">#</th><th>Dato</th><th>Reg.nr</th><th>Delenummer</th><th>Plassering</th><th></th></tr></thead>
+				<tbody id="mListe"></tbody>
+			</table>
+		</div>
+	</div>
+
+	<!-- ===================== RAPPORT ===================== -->
+	<div class="wrap skjult" id="view-rapport">
+		<label id="drop" for="fil">
+			<div class="ikon">⬇</div>
+			<div>Slipp PDF her, eller <b>klikk for å velge fil</b></div>
+			<small>Ferdigbehandlede krav → deler merket SKROTAS matches automatisk mot lageret</small>
+		</label>
+		<input type="file" id="fil" accept="application/pdf,.pdf">
+		<div class="status" id="status"></div>
+
+		<div id="resultat" class="skjult">
+			<div class="tall" id="rTall"></div>
+			<div class="liste-topp" style="margin-top:0">
+				<h2>Treff i rapporten</h2>
+				<button class="overfor" id="overfor">Legg treff i skrotelista →</button>
+			</div>
+			<div class="tblwrap">
+				<table id="rTbl">
+					<thead><tr><th>Reg.nr</th><th>Delenummer</th><th>Beskrivelse</th><th>Dato</th><th>Status</th></tr></thead>
+					<tbody></tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<!-- ===================== SKROTELISTE ===================== -->
+	<div class="wrap skjult" id="view-skrot">
+		<div class="info">Deler under er merket <b>SKROTAS</b> i en rapport og ligger på lageret. Hent delen, trykk <b>Fjernet ✓</b> – da tas den ut av både skrotelista og lagerlista.</div>
+		<div class="liste-topp" style="margin-top:0">
+			<h2 id="sAntall">Skroteliste – 0 deler</h2>
+			<div class="handlinger">
+				<button class="kopi" id="eksportS">Last ned Excel</button>
+				<button class="tom-knapp" id="tomSkrot" disabled>Tøm</button>
+			</div>
+		</div>
+		<div class="tblwrap">
+			<table>
+				<thead><tr><th>Reg.nr</th><th>Delenummer</th><th>Beskrivelse</th><th>Plassering</th><th>Mottatt</th><th>Rapportdato</th><th></th></tr></thead>
+				<tbody id="sListe"></tbody>
+			</table>
+		</div>
+	</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script>
+(function(){
+	"use strict";
+	var $=function(id){ return document.getElementById(id); };
+
+	/* ==================== KONFIG - lim inn fra Supabase ====================
+	   1. supabase.com -> ditt prosjekt -> Settings -> API
+	   2. Kopier "Project URL" og "anon public"-nokkelen hit.
+	   Anon-nokkelen er MENT aa vaere offentlig - sikkerheten ligger i
+	   Row Level Security i databasen, ikke her. */
+	var SUPABASE_URL="https://ufzyzcvdslelizhhtjwe.supabase.co";
+	var SUPABASE_KEY="sb_publishable_Vc1YOrNim-x47d0dOoBPQA_dtGYj_8r";
+
+	var rader=[], skrot=[], sb=null;
+
+	function norm(s){ return String(s||"").toUpperCase().replace(/[\s ]/g,""); }
+	function nokkel(reg,del){ return norm(reg)+"|"+norm(del); }
+	function dbFeil(e){ alert("Databasefeil: "+((e&&e.message)||e)); }
+
+	/* ===== innlogging ===== */
+	var loginEl=$("login"), epostEl=$("epost"), passordEl=$("passord"),
+		loggInnEl=$("logginn"), loginFeilEl=$("loginFeil"), loggUtEl=$("loggut");
+
+	function visLogin(){ loginEl.classList.remove("skjult"); loggUtEl.classList.add("skjult"); }
+	function skjulLogin(){ loginEl.classList.add("skjult"); loggUtEl.classList.remove("skjult"); }
+
+	if(SUPABASE_URL.indexOf("LIM-INN")===0 || !window.supabase){
+		$("oppsett").classList.remove("skjult");
+		epostEl.disabled=passordEl.disabled=loggInnEl.disabled=true;
+	}else{
+		sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+		sb.auth.getSession().then(function(res){
+			if(res.data && res.data.session){ skjulLogin(); lastData(); }
+		});
+	}
+
+	function loggInn(){
+		loginFeilEl.textContent="";
+		loggInnEl.disabled=true; loggInnEl.textContent="Logger inn …";
+		sb.auth.signInWithPassword({email:epostEl.value.trim(),password:passordEl.value}).then(function(res){
+			loggInnEl.disabled=false; loggInnEl.textContent="Logg inn";
+			if(res.error){
+				var m=res.error.message||"";
+				if(/invalid login credentials/i.test(m)) loginFeilEl.textContent="Feil e-post eller passord.";
+				else if(/email not confirmed/i.test(m)) loginFeilEl.textContent="Brukeren er ikke bekreftet: Authentication → Users i Supabase, bekreft brukeren (eller opprett på nytt med «Auto Confirm User»).";
+				else if(/signups not allowed|logins.*disabled|email.*disabled/i.test(m)) loginFeilEl.textContent="E-postinnlogging er skrudd av: sjekk at Email-provider er PÅ under Authentication → Sign In / Up.";
+				else loginFeilEl.textContent="Feil fra Supabase: "+m;
+				return;
+			}
+			passordEl.value=""; skjulLogin(); lastData();
+		});
+	}
+	loggInnEl.onclick=loggInn;
+	passordEl.addEventListener("keydown",function(e){ if(e.key==="Enter") loggInn(); });
+	epostEl.addEventListener("keydown",function(e){ if(e.key==="Enter") passordEl.focus(); });
+	loggUtEl.onclick=function(){ sb.auth.signOut().then(function(){ rader=[]; skrot=[]; tegnListe(); tegnSkrot(); visLogin(); }); };
+
+	function lastData(){
+		Promise.all([
+			sb.from("lager").select("*").order("dato",{ascending:true}),
+			sb.from("skroteliste").select("*").order("rapportdato",{ascending:true})
+		]).then(function(res){
+			if(res[0].error) return dbFeil(res[0].error);
+			if(res[1].error) return dbFeil(res[1].error);
+			rader=res[0].data||[]; skrot=res[1].data||[];
+			tegnListe(); tegnSkrot();
+		});
+	}
+
+	/* ===== faner (henter ferske data ved bytte, i tilfelle en kollega har endret noe) ===== */
+	var views={ mottak:$("view-mottak"), rapport:$("view-rapport"), skrot:$("view-skrot") };
+	document.querySelectorAll(".fane").forEach(function(btn){
+		btn.onclick=function(){
+			document.querySelectorAll(".fane").forEach(function(b){ b.classList.toggle("aktiv",b===btn); });
+			Object.keys(views).forEach(function(k){ views[k].classList.toggle("skjult",k!==btn.dataset.view); });
+			if(sb && loginEl.classList.contains("skjult")) lastData();
+			if(btn.dataset.view==="mottak") $("reg").focus();
+		};
+	});
+	/* ===================== MOTTAK ===================== */
+	var regEl=$("reg"), delEl=$("del"), plEl=$("pl"),
+		mListe=$("mListe"), antallEl=$("antall"), leggEl=$("legg"), tomEl=$("tomliste");
+	var redigerDato="";
+	var STR={ "1":"Liten","2":"Medium","3":"Stor" };
+
+	function idag(){ var d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+	$("idag").textContent=idag();
+
+	function sjekk(){
+		leggEl.disabled=!(regEl.value.trim().length>0 && delEl.value.trim().length>0);
+	}
+
+	function leggTil(){
+		if(leggEl.disabled) return;
+		leggEl.disabled=true;
+		var rad={ dato:(redigerDato||idag()), reg:regEl.value.trim().toUpperCase(),
+			del:delEl.value.trim(), pl:plEl.value };
+		sb.from("lager").insert(rad).select().single().then(function(res){
+			if(res.error){ dbFeil(res.error); sjekk(); return; }
+			rader.push(res.data); redigerDato="";
+			tegnListe();
+			regEl.value=""; delEl.value=""; sjekk(); regEl.focus();
+		});
+	}
+
+	function tegnListe(){
+		antallEl.textContent="På lager – "+rader.length+(rader.length===1?" del":" deler");
+		tomEl.disabled=rader.length===0;
+		if(!rader.length){ mListe.innerHTML='<tr><td colspan="6" class="tom-tekst">Ingen registrerte ennå.</td></tr>'; return; }
+		mListe.innerHTML="";
+		rader.forEach(function(r,i){
+			var tr=document.createElement("tr");
+			tr.onclick=function(e){ if(e.target.classList.contains("slett")) return; rediger(i); };
+			tr.innerHTML='<td class="idx">'+(i+1)+'</td><td class="num">'+r.dato+'</td><td class="num">'+r.reg+
+				'</td><td class="num">'+r.del+'</td><td><span class="pl">'+r.pl+'</span></td>'+
+				'<td class="slettcell"><button class="slett" title="Slett" aria-label="Slett">×</button></td>';
+			tr.querySelector(".slett").onclick=function(){
+				sb.from("lager").delete().eq("id",r.id).then(function(res){
+					if(res.error) return dbFeil(res.error);
+					rader.splice(i,1); tegnListe();
+				});
+			};
+			mListe.appendChild(tr);
+		});
+	}
+
+	function rediger(i){
+		var r=rader[i];
+		sb.from("lager").delete().eq("id",r.id).then(function(res){
+			if(res.error) return dbFeil(res.error);
+			regEl.value=r.reg; delEl.value=r.del; redigerDato=r.dato; plEl.value=r.pl||"Liten";
+			rader.splice(i,1); tegnListe(); sjekk(); regEl.focus();
+		});
+	}
+
+	tomEl.onclick=function(){
+		if(!rader.length || !confirm("Tømme hele lagerlista for ALLE brukere? Dette kan ikke angres.")) return;
+		sb.from("lager").delete().not("id","is",null).then(function(res){
+			if(res.error) return dbFeil(res.error);
+			rader=[]; redigerDato=""; tegnListe();
+		});
+	};
+
+	regEl.addEventListener("input",sjekk);
+	delEl.addEventListener("input",sjekk);
+	regEl.addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); if(regEl.value.trim()) delEl.focus(); } });
+	delEl.addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); plEl.focus(); } });
+	plEl.addEventListener("keydown",function(e){
+		if(STR[e.key]){ e.preventDefault(); plEl.value=STR[e.key]; }
+		else if(e.key==="Enter"){ e.preventDefault(); leggTil(); }
+	});
+	leggEl.onclick=leggTil;
+	/* ===================== RAPPORT (PDF -> SKROTAS) ===================== */
+	/* PDF-en leses kun i nettleseren og lastes aldri opp noe sted. */
+	var PDFJS=window.pdfjsLib;
+	if(PDFJS){ PDFJS.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"; }
+	var drop=$("drop"), fil=$("fil"), status=$("status"), resultat=$("resultat"),
+		rTall=$("rTall"), rTbody=document.querySelector("#rTbl tbody"), overforEl=$("overfor");
+	var alle=[];
+
+	function sidensLinjer(tc){
+		var bins={};
+		tc.items.forEach(function(it){
+			if(!it.str || !it.str.trim()) return;
+			var y=Math.round(it.transform[5]);
+			(bins[y]=bins[y]||[]).push({x:it.transform[4],s:it.str});
+		});
+		return Object.keys(bins).map(Number).sort(function(a,b){return b-a;}).map(function(y){
+			return bins[y].sort(function(a,b){return a.x-b.x;}).map(function(o){return o.s;}).join(" ").replace(/\s+/g," ").trim();
+		});
+	}
+	var HEADER=/^\s*(\d{7})\s+(\d{9})\s+(\d{2})\/(\d{2})\/(\d{2})\s+(.*)$/, SKROT=/^\s*(\d{4,8})\s*-\s*\d\s+(.*?)\s+SKROTAS\s*$/, ARTNR=/^\s*(\d{4,8})\s*-\s*\d\b/;
+
+	function finnReg(t){ for(var i=0;i<t.length;i++){ if(/^[A-Z]{2}\d{5}$/.test(t[i])) return t[i]; } return /^0000\d$/.test(t[3]||"")?t[3]:""; }
+	function parse(linjer){
+		var chassisReg={};
+		linjer.forEach(function(ln){ var h=HEADER.exec(ln); if(h){ var t=h[6].split(/\s+/); var r=finnReg(t); if(r&&t[1]) chassisReg[t[1]]=r; } });
+		var rd=[], reg="", dato="", lastArt="";
+		linjer.forEach(function(ln){
+			var h=HEADER.exec(ln);
+			if(h){ dato="20"+h[3]+"-"+h[4]+"-"+h[5]; var t=h[6].split(/\s+/); reg=finnReg(t); if(!reg&&t[1]&&chassisReg[t[1]]) reg=chassisReg[t[1]]; lastArt=""; return; }
+			var af=ARTNR.exec(ln); if(af) lastArt=af[1];
+			if(/SKROTAS\s*$/.test(ln)){
+				var m=SKROT.exec(ln), del, beskr;
+				if(m){ del=m[1]; beskr=m[2].replace(/(\s+[\d.,\-]+){1,3}\s*$/,"").trim(); }
+				else { del=lastArt; var m2=/^(.*?)\s+SKROTAS\s*$/.exec(ln);
+					beskr=m2?m2[1].replace(/(\s+[\d.,\-]+){1,3}\s*$/,"").trim():""; }
+				if(!del) return;
+				rd.push({reg:reg,del:del,dato:dato,beskr:beskr,noreg:!reg});
+			}
+		});
+		return rd;
+	}
+
+	function matchMotLager(rapportRader){
+		rapportRader.forEach(function(rr){
+			var i=-1;
+			for(var j=0;j<rader.length;j++){ if(nokkel(rader[j].reg,rader[j].del)===nokkel(rr.reg,rr.del)){ i=j; break; } }
+			if(i<0 && rr.noreg){
+				var kand=[]; rader.forEach(function(l,j2){ if(norm(l.del)===norm(rr.del)) kand.push(j2); });
+				if(kand.length===1) i=kand[0];
+			}
+			rr.lagerIdx=i;
+		});
+	}
+
+	function tegnR(){
+		matchMotLager(alle);
+		var treff=alle.filter(function(r){ return r.lagerIdx>=0; });
+		var nNoreg=alle.filter(function(r){return r.noreg;}).length;
+		rTall.innerHTML='<div class="t"><b>'+alle.length+'</b>SKROTAS totalt</div>'+
+			'<div class="t"><b>'+treff.length+'</b>på lager hos oss</div>'+
+			'<div class="t muted"><b>'+nNoreg+'</b>uten reg.nr</div>';
+		overforEl.disabled=!treff.length;
+		overforEl.textContent=treff.length?"Legg "+treff.length+" treff i skrotelista →":"Ingen treff mot lageret";
+		rTbody.innerHTML="";
+		alle.forEach(function(r){
+			var tr=document.createElement("tr");
+			if(r.noreg)tr.className="noreg";
+			var tag=r.lagerIdx>=0?'<span class="tag g">på lager – '+(rader[r.lagerIdx].pl||"")+'</span>'
+				:(r.noreg?'<span class="tag n">mangler reg.nr</span>':'<span style="color:var(--svak);font-size:12px">ikke hos oss</span>');
+			tr.innerHTML='<td class="num">'+(r.reg||"—")+'</td><td class="num">'+r.del+'</td><td>'+r.beskr+'</td><td class="num">'+r.dato+'</td><td>'+tag+'</td>';
+			rTbody.appendChild(tr);
+		});
+	}
+
+	overforEl.onclick=function(){
+		matchMotLager(alle);
+		var nye=[];
+		alle.forEach(function(r){
+			if(r.lagerIdx<0) return;
+			var l=rader[r.lagerIdx], k=nokkel(l.reg,l.del);
+			if(skrot.some(function(s){ return nokkel(s.reg,s.del)===k; })) return;
+			if(nye.some(function(s){ return nokkel(s.reg,s.del)===k; })) return;
+			nye.push({reg:l.reg,del:l.del,beskr:r.beskr,pl:l.pl,mottatt:l.dato,rapportdato:r.dato});
+		});
+		if(!nye.length){ overforEl.textContent="Alt lå der fra før ✓"; overforEl.disabled=true; return; }
+		overforEl.disabled=true;
+		sb.from("skroteliste").insert(nye).select().then(function(res){
+			if(res.error){ dbFeil(res.error); overforEl.disabled=false; return; }
+			skrot=skrot.concat(res.data||[]); tegnSkrot();
+			overforEl.textContent="La til "+nye.length+" ✓";
+		});
+	};
+
+	function lesPdf(file){
+		if(!PDFJS){ rFeil("Fikk ikke lastet PDF-leseren. Sjekk at du er på nett og åpne appen på nytt."); return; }
+		status.className="status"; status.textContent="Leser "+file.name+" …"; resultat.classList.add("skjult");
+		var fr=new FileReader();
+		fr.onload=function(){
+			PDFJS.getDocument({data:new Uint8Array(fr.result)}).promise.then(function(pdf){
+				var jobs=[]; for(var p=1;p<=pdf.numPages;p++){ jobs.push(pdf.getPage(p).then(function(pg){return pg.getTextContent();}).then(sidensLinjer)); }
+				return Promise.all(jobs);
+			}).then(function(sider){
+				alle=parse([].concat.apply([],sider));
+				if(!alle.length){ rFeil("Fant ingen SKROTAS-linjer. Er dette riktig rapport?"); return; }
+				status.textContent="Ferdig – "+alle.length+" SKROTAS-deler funnet."; resultat.classList.remove("skjult"); tegnR();
+			}).catch(function(e){ rFeil("Klarte ikke å lese PDF-en: "+e.message); });
+		};
+		fr.readAsArrayBuffer(file);
+	}
+	function rFeil(t){ status.className="status feil"; status.textContent=t; }
+
+	fil.addEventListener("change",function(){ if(fil.files[0]) lesPdf(fil.files[0]); });
+	["dragenter","dragover"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.add("hot"); }); });
+	["dragleave","drop"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.remove("hot"); }); });
+	drop.addEventListener("drop",function(e){ var f=e.dataTransfer.files[0]; if(f) lesPdf(f); });
+	/* ===================== SKROTELISTE ===================== */
+	var sListe=$("sListe"), sAntall=$("sAntall"), skrotBadge=$("skrotBadge"), tomSkrot=$("tomSkrot");
+
+	function tegnSkrot(){
+		sAntall.textContent="Skroteliste – "+skrot.length+(skrot.length===1?" del":" deler");
+		tomSkrot.disabled=skrot.length===0;
+		skrotBadge.classList.toggle("skjult",!skrot.length);
+		skrotBadge.textContent=skrot.length;
+		if(!skrot.length){ sListe.innerHTML='<tr><td colspan="7" class="tom-tekst">Ingenting å skrote. Les inn en rapport under «Rapport».</td></tr>'; return; }
+		sListe.innerHTML="";
+		skrot.forEach(function(s,i){
+			var tr=document.createElement("tr");
+			tr.innerHTML='<td class="num">'+s.reg+'</td><td class="num">'+s.del+'</td><td>'+(s.beskr||"")+'</td>'+
+				'<td><span class="pl">'+(s.pl||"")+'</span></td><td class="num">'+(s.mottatt||"")+'</td><td class="num">'+(s.rapportdato||"")+'</td>'+
+				'<td class="slettcell" style="width:110px"><button class="fjern">Fjernet ✓</button></td>';
+			tr.querySelector(".fjern").onclick=function(){
+				sb.from("skroteliste").delete().eq("id",s.id).then(function(res){
+					if(res.error) return dbFeil(res.error);
+					skrot.splice(i,1);
+					var k=nokkel(s.reg,s.del), li=-1;
+					for(var j=0;j<rader.length;j++){ if(nokkel(rader[j].reg,rader[j].del)===k){ li=j; break; } }
+					if(li>=0){
+						var lid=rader[li].id; rader.splice(li,1);
+						sb.from("lager").delete().eq("id",lid).then(function(r2){ if(r2.error) dbFeil(r2.error); });
+					}
+					tegnSkrot(); tegnListe();
+				});
+			};
+			sListe.appendChild(tr);
+		});
+	}
+	tomSkrot.onclick=function(){
+		if(!skrot.length || !confirm("Tømme skrotelista for ALLE brukere? (Lagerlista røres ikke.)")) return;
+		sb.from("skroteliste").delete().not("id","is",null).then(function(res){
+			if(res.error) return dbFeil(res.error);
+			skrot=[]; tegnSkrot();
+		});
+	};
+
+	/* ===================== IMPORT (Excel/CSV -> Lager) ===================== */
+	$("importer").onclick=function(){ $("importFil").click(); };
+	$("importFil").addEventListener("change",function(){ var f=this.files[0]; this.value=""; if(f) importerFil(f); });
+	function importerFil(f){
+		if(!window.XLSX){ alert("Fikk ikke lastet Excel-modulen. Sjekk at du er på nett og prøv igjen."); return; }
+		var fr=new FileReader();
+		fr.onload=function(){
+			try{
+				var wb=XLSX.read(new Uint8Array(fr.result),{type:"array"});
+				var rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,raw:false,defval:""});
+				var nye=[], hoppet=0;
+				rows.forEach(function(c){
+					c=c.map(function(x){ return String(x==null?"":x).trim(); });
+					var dato="",reg="",del="",pl="";
+					c.forEach(function(x){
+						if(!dato && /^\d{4}-\d{2}-\d{2}$/.test(x)) dato=x;
+						else if(!reg && /^([A-Za-z]{2}\d{5}|0000\d)$/.test(x)) reg=x.toUpperCase();
+						else if(!del && /^\d{4,8}$/.test(x)) del=x;
+						else if(!pl && /^(liten|medium|stor)$/i.test(x)) pl=x.charAt(0).toUpperCase()+x.slice(1).toLowerCase();
+					});
+					if(!reg||!del){ if(c.join("")!=="") hoppet++; return; }
+					var k=nokkel(reg,del);
+					if(rader.some(function(l){ return nokkel(l.reg,l.del)===k; }) ||
+					   nye.some(function(l){ return nokkel(l.reg,l.del)===k; })){ hoppet++; return; }
+					nye.push({dato:dato||idag(),reg:reg,del:del,pl:pl||"Liten"});
+				});
+				if(!nye.length){ alert("Fant ingen nye deler i fila."+(hoppet?" ("+hoppet+" rader hoppet over.)":"")); return; }
+				sb.from("lager").insert(nye).select().then(function(res){
+					if(res.error) return dbFeil(res.error);
+					rader=rader.concat(res.data||[]); tegnListe();
+					alert("Importert "+nye.length+" deler."+(hoppet?" ("+hoppet+" rader hoppet over – overskrift, duplikat eller ugyldig.)":""));
+				});
+			}catch(e){ alert("Klarte ikke å lese fila: "+e.message); }
+		};
+		fr.readAsArrayBuffer(f);
+	}
+
+	/* ===================== EXCEL-EKSPORT ===================== */
+	function eksporter(){
+		if(!window.XLSX){ alert("Fikk ikke lastet Excel-modulen. Sjekk at du er på nett og prøv igjen."); return; }
+		var wb=XLSX.utils.book_new();
+		var l=[["Dato","Reg.nr","Delnr","Plassering"]].concat(rader.map(function(r){ return [r.dato,r.reg,r.del,r.pl]; }));
+		var s=[["Reg.nr","Delenummer","Beskrivelse","Plassering","Mottatt","Rapportdato"]].concat(
+			skrot.map(function(r){ return [r.reg,r.del,r.beskr,r.pl,r.mottatt,r.rapportdato]; }));
+		XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(l),"Lager");
+		XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(s),"Skroteliste");
+		XLSX.writeFile(wb,"garanti-retur-"+idag()+".xlsx");
+	}
+	$("eksportL").onclick=eksporter;
+	$("eksportS").onclick=eksporter;
+
+	tegnListe(); sjekk(); tegnSkrot();
+})();
+</script>
+</body>
+</html>
