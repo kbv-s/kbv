@@ -59,6 +59,8 @@
 	.legg:disabled{background:#9bb0a3;cursor:default}
 	#mListe tr{cursor:pointer}
 	#mListe tr:hover{background:#f5f8fc}
+	#mListe tr.redigeres td{background:var(--gul)}
+	#avbryt{display:none;height:42px}
 	.idx{color:var(--svak);font-family:var(--mono);width:34px}
 	.slettcell{width:40px;text-align:center}
 	.slett{background:none;border:0;color:var(--rod);font-size:19px;line-height:1;cursor:pointer;padding:2px 6px}
@@ -83,7 +85,6 @@
 	.fjern.rod{background:var(--rod)}
 	.fjern.rod:hover{background:#8f2f2f}
 	.tag.b{background:#dbe7f7;border:1px solid #a9c4e8;color:var(--blaa)}
-	.info{background:var(--gul);border:1px solid var(--gul-kant);border-radius:10px;padding:12px 16px;font-size:14px;margin:0 0 18px}
 
 	/* ---- MOBIL ---- */
 	@media (max-width:700px){
@@ -105,11 +106,66 @@
 		.handlinger{width:100%}
 		.handlinger .kopi{flex:1}
 		.handlinger .tom-knapp{flex:0 0 auto}
-		th,td{padding:8px 10px;font-size:13px}
+		.idx{display:none}
+		th,td{padding:8px 7px;font-size:12.5px}
+		td .pl{font-size:11px;padding:2px 7px}
+		.slettcell{width:30px}
+		.slett{padding:2px 3px}
 		#drop{padding:26px 14px}
 		.tall{gap:16px}
 		.tall .t b{font-size:18px}
 		.login-boks{width:calc(100vw - 32px);max-width:340px}
+	}
+	@media (max-width:360px){
+		th,td{padding:6px 4px;font-size:11.5px}
+		td .pl{font-size:10px;padding:1px 5px}
+	}
+
+	/* ---- SKROTELISTE SOM KORT paa smale skjermer ----
+	   Viktigst for aa kjenne igjen delen: reg.nr + delenummer + plassering,
+	   saa beskrivelse. Datoer nedtonet. Knappen alltid synlig til hoeyre. */
+	@media (max-width:900px){
+		#view-skrot thead{display:none}
+		#sListe tr{display:grid;grid-template-columns:auto auto 1fr auto;
+			grid-template-areas:"reg del pl knapp" "beskr beskr beskr knapp" "mot mot rap knapp";
+			gap:3px 8px;padding:10px 12px;border-bottom:1px solid #eef1f5;align-items:center}
+		#sListe tr:last-child{border-bottom:0}
+		#sListe td{display:block;padding:0;border:0;white-space:normal}
+		#sListe td:nth-child(1){grid-area:reg;font-weight:650;font-size:14px}
+		#sListe td:nth-child(2){grid-area:del;font-weight:650;font-size:14px}
+		#sListe td:nth-child(3){grid-area:beskr;font-size:12.5px;color:var(--svak);letter-spacing:.01em}
+		#sListe td:nth-child(4){display:none}
+		#sListe td:nth-child(5){grid-area:pl;justify-self:start}
+		#sListe td:nth-child(6){grid-area:mot;font-size:11.5px;color:var(--svak);white-space:nowrap}
+		#sListe td:nth-child(7){grid-area:rap;font-size:11.5px;color:var(--svak);white-space:nowrap}
+		#sListe td:nth-child(6)::before{content:"mottatt ";font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+		#sListe td:nth-child(7)::before{content:"rapport ";font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+		#sListe td:nth-child(8){grid-area:knapp;width:auto !important}
+		#sListe .fjern{padding:9px 12px}
+		#sListe td.tom-tekst{grid-area:auto;grid-column:1/-1;font-weight:400;font-size:14px;text-align:center;padding:20px 0}
+
+		/* arkivet som kort paa samme maate */
+		#view-arkiv thead{display:none}
+		#aListe tr{display:grid;grid-template-columns:auto auto 1fr;
+			grid-template-areas:"reg del pl" "beskr beskr beskr" "dato dato dato";
+			gap:3px 8px;padding:10px 12px;border-bottom:1px solid #eef1f5;align-items:center}
+		#aListe tr:last-child{border-bottom:0}
+		#aListe td{display:block;padding:0;border:0;white-space:normal}
+		#aListe td:nth-child(1){grid-area:reg;font-weight:650;font-size:14px}
+		#aListe td:nth-child(2){grid-area:del;font-weight:650;font-size:14px}
+		#aListe td:nth-child(3){grid-area:beskr;font-size:12.5px;color:var(--svak)}
+		#aListe td:nth-child(4){grid-area:pl;justify-self:start}
+		#aListe td:nth-child(5){grid-area:dato;font-size:11.5px;color:var(--svak)}
+		#aListe td:nth-child(5)::before{content:"skrotet ";font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+		#aListe td.tom-tekst{grid-area:auto;grid-column:1/-1;font-weight:400;font-size:14px;text-align:center;padding:20px 0}
+	}
+	@media (max-width:480px){
+		#sListe tr{grid-template-areas:"reg del pl knapp" "beskr beskr beskr knapp"}
+		#sListe td:nth-child(6),#sListe td:nth-child(7){display:none}
+	}
+	@media (max-width:360px){
+		#sListe tr{gap:3px 6px;padding:10px 8px}
+		#sListe td:nth-child(1),#sListe td:nth-child(2){font-size:13px}
 	}
 	#login{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:10}
 	.login-boks{background:var(--flate);border:1px solid var(--kant);border-radius:14px;padding:30px 28px;width:340px;display:flex;flex-direction:column;gap:12px;box-shadow:0 8px 30px rgba(25,33,46,.08)}
@@ -142,6 +198,7 @@
 			<button class="fane aktiv" data-view="mottak">Lager</button>
 			<button class="fane" data-view="rapport">Rapport</button>
 			<button class="fane" data-view="skrot">Skroteliste<span class="badge skjult" id="skrotBadge"></span></button>
+			<button class="fane" data-view="arkiv">Arkiv</button>
 		</div>
 		<button class="loggut skjult" id="loggut">Logg ut</button>
 	</div>
@@ -160,6 +217,7 @@
 				</select>
 			</div>
 			<button class="legg" id="legg">Legg til</button>
+			<button class="tom-knapp" id="avbryt">Avbryt</button>
 		</div>
 
 		<div class="liste-topp">
@@ -206,7 +264,6 @@
 
 	<!-- ===================== SKROTELISTE ===================== -->
 	<div class="wrap skjult" id="view-skrot">
-		<div class="info">Deler under er merket <b>SKROTAS</b> i en rapport og ligger på lageret. Hent delen og trykk <b>Skrotet ✓</b> – da tas den ut av både skrotelista og lagerlista.</div>
 		<div class="liste-topp" style="margin-top:0">
 			<h2 id="sAntall">Skroteliste – 0 deler</h2>
 			<div class="handlinger">
@@ -218,6 +275,19 @@
 			<table>
 				<thead><tr><th>Reg.nr</th><th>Delenummer</th><th>Beskrivelse</th><th>Status</th><th>Plassering</th><th>Mottatt</th><th>Rapportdato</th><th></th></tr></thead>
 				<tbody id="sListe"></tbody>
+			</table>
+		</div>
+	</div>
+
+	<!-- ===================== ARKIV ===================== -->
+	<div class="wrap skjult" id="view-arkiv">
+		<div class="liste-topp" style="margin-top:0">
+			<h2 id="aAntall">Arkiv – 0 deler</h2>
+		</div>
+		<div class="tblwrap">
+			<table>
+				<thead><tr><th>Reg.nr</th><th>Delenummer</th><th>Beskrivelse</th><th>Plassering</th><th>Skrotet</th></tr></thead>
+				<tbody id="aListe"></tbody>
 			</table>
 		</div>
 	</div>
@@ -238,7 +308,7 @@
 	var SUPABASE_URL="https://ufzyzcvdslelizhhtjwe.supabase.co";
 	var SUPABASE_KEY="sb_publishable_Vc1YOrNim-x47d0dOoBPQA_dtGYj_8r";
 
-	var rader=[], skrot=[], sb=null;
+	var rader=[], skrot=[], arkiv=[], sb=null;
 
 	function norm(s){ return String(s||"").toUpperCase().replace(/[\s ]/g,""); }
 	function nokkel(reg,del){ return norm(reg)+"|"+norm(del); }
@@ -280,22 +350,27 @@
 	loggInnEl.onclick=loggInn;
 	passordEl.addEventListener("keydown",function(e){ if(e.key==="Enter") loggInn(); });
 	epostEl.addEventListener("keydown",function(e){ if(e.key==="Enter") passordEl.focus(); });
-	loggUtEl.onclick=function(){ sb.auth.signOut().then(function(){ rader=[]; skrot=[]; tegnListe(); tegnSkrot(); visLogin(); }); };
+	loggUtEl.onclick=function(){ sb.auth.signOut().then(function(){ rader=[]; skrot=[]; arkiv=[]; tegnListe(); tegnSkrot(); tegnArkiv(); visLogin(); }); };
 
 	function lastData(){
-		Promise.all([
-			sb.from("lager").select("*").order("dato",{ascending:true}),
-			sb.from("skroteliste").select("*").order("rapportdato",{ascending:true})
-		]).then(function(res){
+		var grense=new Date(Date.now()-90*24*60*60*1000).toISOString(); // 3 maaneder
+		sb.from("arkiv").delete().lt("skrotet",grense).then(function(){
+			return Promise.all([
+				sb.from("lager").select("*").order("dato",{ascending:true}),
+				sb.from("skroteliste").select("*").order("rapportdato",{ascending:true}),
+				sb.from("arkiv").select("*").order("skrotet",{ascending:false})
+			]);
+		}).then(function(res){
 			if(res[0].error) return dbFeil(res[0].error);
 			if(res[1].error) return dbFeil(res[1].error);
 			rader=res[0].data||[]; skrot=res[1].data||[];
-			tegnListe(); tegnSkrot();
+			arkiv=res[2].error?[]:(res[2].data||[]);   // taaler at arkiv-tabellen mangler
+			tegnListe(); tegnSkrot(); tegnArkiv();
 		});
 	}
 
 	/* ===== faner (henter ferske data ved bytte, i tilfelle en kollega har endret noe) ===== */
-	var views={ mottak:$("view-mottak"), rapport:$("view-rapport"), skrot:$("view-skrot") };
+	var views={ mottak:$("view-mottak"), rapport:$("view-rapport"), skrot:$("view-skrot"), arkiv:$("view-arkiv") };
 	document.querySelectorAll(".fane").forEach(function(btn){
 		btn.onclick=function(){
 			document.querySelectorAll(".fane").forEach(function(b){ b.classList.toggle("aktiv",b===btn); });
@@ -307,7 +382,8 @@
 	/* ===================== MOTTAK ===================== */
 	var regEl=$("reg"), delEl=$("del"), plEl=$("pl"),
 		mListe=$("mListe"), antallEl=$("antall"), leggEl=$("legg"), tomEl=$("tomliste");
-	var redigerDato="";
+	var redigerId=null, redigerDato="";
+	var avbrytEl=$("avbryt");
 	var STR={ "1":"Liten","2":"Medium","3":"Stor" };
 
 	function idag(){ var d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
@@ -317,18 +393,37 @@
 		leggEl.disabled=!(regEl.value.trim().length>0 && delEl.value.trim().length>0);
 	}
 
+	function nullstillRedigering(){
+		redigerId=null; redigerDato="";
+		leggEl.textContent="Legg til"; avbrytEl.style.display="none";
+	}
 	function leggTil(){
 		if(leggEl.disabled) return;
 		leggEl.disabled=true;
-		var rad={ dato:(redigerDato||idag()), reg:regEl.value.trim().toUpperCase(),
-			del:delEl.value.trim(), pl:plEl.value };
-		sb.from("lager").insert(rad).select().single().then(function(res){
+		var verdier={ reg:regEl.value.trim().toUpperCase(), del:delEl.value.trim(), pl:plEl.value };
+		var dup=rader.some(function(l){ return l.id!==redigerId && nokkel(l.reg,l.del)===nokkel(verdier.reg,verdier.del); });
+		if(dup && !confirm(verdier.reg+" / "+verdier.del+" ligger allerede i lageret. Legge inn likevel?")){
+			leggEl.disabled=false; sjekk(); return;
+		}
+		var ferdig=function(res, oppdaterIdx){
 			if(res.error){ dbFeil(res.error); sjekk(); return; }
-			rader.push(res.data); redigerDato="";
-			tegnListe();
+			if(oppdaterIdx>=0) rader[oppdaterIdx]=res.data; else rader.push(res.data);
+			nullstillRedigering(); tegnListe();
 			regEl.value=""; delEl.value=""; sjekk(); regEl.focus();
-		});
+		};
+		if(redigerId){
+			var idx=-1;
+			for(var j=0;j<rader.length;j++){ if(rader[j].id===redigerId){ idx=j; break; } }
+			sb.from("lager").update(verdier).eq("id",redigerId).select().single().then(function(res){ ferdig(res, idx); });
+		}else{
+			verdier.dato=idag();
+			sb.from("lager").insert(verdier).select().single().then(function(res){ ferdig(res, -1); });
+		}
 	}
+	avbrytEl.onclick=function(){
+		nullstillRedigering(); regEl.value=""; delEl.value="";
+		tegnListe(); sjekk(); regEl.focus();
+	};
 
 	function tegnListe(){
 		antallEl.textContent="På lager – "+rader.length+(rader.length===1?" del":" deler");
@@ -337,6 +432,7 @@
 		mListe.innerHTML="";
 		rader.forEach(function(r,i){
 			var tr=document.createElement("tr");
+			if(r.id===redigerId) tr.className="redigeres";
 			tr.onclick=function(e){ if(e.target.classList.contains("slett")) return; rediger(i); };
 			tr.innerHTML='<td class="idx">'+(i+1)+'</td><td class="num">'+r.dato+'</td><td class="num">'+r.reg+
 				'</td><td class="num">'+r.del+'</td><td><span class="pl">'+r.pl+'</span></td>'+
@@ -344,6 +440,7 @@
 			tr.querySelector(".slett").onclick=function(){
 				sb.from("lager").delete().eq("id",r.id).then(function(res){
 					if(res.error) return dbFeil(res.error);
+					if(r.id===redigerId){ nullstillRedigering(); regEl.value=""; delEl.value=""; sjekk(); }
 					rader.splice(i,1); tegnListe();
 				});
 			};
@@ -353,18 +450,17 @@
 
 	function rediger(i){
 		var r=rader[i];
-		sb.from("lager").delete().eq("id",r.id).then(function(res){
-			if(res.error) return dbFeil(res.error);
-			regEl.value=r.reg; delEl.value=r.del; redigerDato=r.dato; plEl.value=r.pl||"Liten";
-			rader.splice(i,1); tegnListe(); sjekk(); regEl.focus();
-		});
+		regEl.value=r.reg; delEl.value=r.del; plEl.value=r.pl||"Liten";
+		redigerId=r.id; redigerDato=r.dato;
+		leggEl.textContent="Oppdater"; avbrytEl.style.display="";
+		tegnListe(); sjekk(); regEl.focus();
 	}
 
 	tomEl.onclick=function(){
 		if(!rader.length || !confirm("Tømme hele lagerlista for ALLE brukere? Dette kan ikke angres.")) return;
 		sb.from("lager").delete().not("id","is",null).then(function(res){
 			if(res.error) return dbFeil(res.error);
-			rader=[]; redigerDato=""; tegnListe();
+			rader=[]; nullstillRedigering(); regEl.value=""; delEl.value=""; sjekk(); tegnListe();
 		});
 	};
 
@@ -513,7 +609,13 @@
 				'<td><span class="pl">'+(s.pl||"")+'</span></td><td class="num">'+(s.mottatt||"")+'</td><td class="num">'+(s.rapportdato||"")+'</td>'+
 				'<td class="slettcell" style="width:110px"><button class="fjern'+(erSkrot?' rod':'')+'">'+(erSkrot?"Skrotet ✓":"Returnert ✓")+'</button></td>';
 			tr.querySelector(".fjern").onclick=function(){
-				sb.from("skroteliste").delete().eq("id",s.id).then(function(res){
+				sb.from("arkiv").insert({reg:s.reg,del:s.del,beskr:s.beskr,pl:s.pl,mottatt:s.mottatt,rapportdato:s.rapportdato})
+					.select().single().then(function(ra){
+					if(ra.error) return dbFeil(ra.error);
+					arkiv.unshift(ra.data); tegnArkiv();
+					return sb.from("skroteliste").delete().eq("id",s.id);
+				}).then(function(res){
+					if(!res) return;
 					if(res.error) return dbFeil(res.error);
 					skrot.splice(i,1);
 					var k=nokkel(s.reg,s.del), li=-1;
@@ -528,6 +630,20 @@
 			sListe.appendChild(tr);
 		});
 	}
+	/* ===================== ARKIV ===================== */
+	var aListe=$("aListe"), aAntall=$("aAntall");
+	function tegnArkiv(){
+		aAntall.textContent="Arkiv – "+arkiv.length+(arkiv.length===1?" del":" deler");
+		if(!arkiv.length){ aListe.innerHTML='<tr><td colspan="5" class="tom-tekst">Ingen skrotede deler i arkivet.</td></tr>'; return; }
+		aListe.innerHTML="";
+		arkiv.forEach(function(a){
+			var tr=document.createElement("tr");
+			tr.innerHTML='<td class="num">'+a.reg+'</td><td class="num">'+a.del+'</td><td>'+(a.beskr||"")+'</td>'+
+				'<td><span class="pl">'+(a.pl||"")+'</span></td><td class="num">'+String(a.skrotet||"").slice(0,10)+'</td>';
+			aListe.appendChild(tr);
+		});
+	}
+
 	tomSkrot.onclick=function(){
 		if(!skrot.length || !confirm("Tømme skrotelista for ALLE brukere? (Lagerlista røres ikke.)")) return;
 		sb.from("skroteliste").delete().not("id","is",null).then(function(res){
@@ -580,14 +696,17 @@
 		var l=[["Dato","Reg.nr","Delnr","Plassering"]].concat(rader.map(function(r){ return [r.dato,r.reg,r.del,r.pl]; }));
 		var s=[["Reg.nr","Delenummer","Beskrivelse","Status","Plassering","Mottatt","Rapportdato"]].concat(
 			skrot.map(function(r){ return [r.reg,r.del,r.beskr,r.status||"SKROTAS",r.pl,r.mottatt,r.rapportdato]; }));
+		var a=[["Reg.nr","Delenummer","Beskrivelse","Plassering","Skrotet"]].concat(
+			arkiv.map(function(r){ return [r.reg,r.del,r.beskr,r.pl,String(r.skrotet||"").slice(0,10)]; }));
 		XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(l),"Lager");
 		XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(s),"Skroteliste");
+		XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(a),"Arkiv");
 		XLSX.writeFile(wb,"garanti-retur-"+idag()+".xlsx");
 	}
 	$("eksportL").onclick=eksporter;
 	$("eksportS").onclick=eksporter;
 
-	tegnListe(); sjekk(); tegnSkrot();
+	tegnListe(); sjekk(); tegnSkrot(); tegnArkiv();
 })();
 </script>
 </body>
