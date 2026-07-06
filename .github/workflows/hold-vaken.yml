@@ -1,9 +1,9 @@
-# Pinger Supabase-databasen to ganger i uka saa gratis-prosjektet
+# Pinger Supabase-databasen daglig saa gratis-prosjektet
 # ikke blir satt paa pause (krever ellers aktivitet minst hver 7. dag).
 name: Hold Supabase vaaken
 on:
   schedule:
-    - cron: "0 6 * * 1,4"   # mandag og torsdag kl. 06:00 UTC
+    - cron: "0 6 * * *"   # hver dag kl. 06:00 UTC
   workflow_dispatch: {}      # gjoer at du ogsaa kan kjoere den manuelt
 jobs:
   ping:
