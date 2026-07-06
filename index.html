@@ -43,6 +43,10 @@
 	th,td{padding:9px 14px;text-align:left;border-bottom:1px solid #eef1f5;white-space:nowrap}
 	th{background:var(--blaa);color:#fff;font-weight:600;font-size:12.5px;letter-spacing:.02em}
 	td.num{font-family:var(--mono)}
+	td.gammel{color:var(--rod);font-weight:650}
+	#mListe tr.eldre td{background:#fff8e6}
+	#mListe tr.gammel-rad td{background:#fdecec}
+	#mListe tr.eldre:hover td,#mListe tr.gammel-rad:hover td{filter:brightness(.97)}
 	td .pl{font-size:12px;color:#fff;background:var(--blaa-2);padding:2px 9px;border-radius:999px}
 	tbody tr:last-child td{border-bottom:0}
 	.tom-tekst{color:var(--svak);font-size:14px;text-align:center;padding:30px}
@@ -425,6 +429,14 @@
 		tegnListe(); sjekk(); regEl.focus();
 	};
 
+	function alderKlasse(dato){
+		var g2=new Date(); g2.setMonth(g2.getMonth()-2);
+		var g1=new Date(); g1.setMonth(g1.getMonth()-1);
+		var d=new Date(dato);
+		if(d<g2) return "gammel-rad";   // over 2 mnd: roed
+		if(d<g1) return "eldre";        // over 1 mnd: gul
+		return "";
+	}
 	function tegnListe(){
 		antallEl.textContent="På lager – "+rader.length+(rader.length===1?" del":" deler");
 		tomEl.disabled=rader.length===0;
@@ -432,9 +444,9 @@
 		mListe.innerHTML="";
 		rader.forEach(function(r,i){
 			var tr=document.createElement("tr");
-			if(r.id===redigerId) tr.className="redigeres";
+			tr.className=(r.id===redigerId)?"redigeres":alderKlasse(r.dato);
 			tr.onclick=function(e){ if(e.target.classList.contains("slett")) return; rediger(i); };
-			tr.innerHTML='<td class="idx">'+(i+1)+'</td><td class="num">'+r.dato+'</td><td class="num">'+r.reg+
+			tr.innerHTML='<td class="idx">'+(i+1)+'</td><td class="num'+(alderKlasse(r.dato)==="gammel-rad"?" gammel":"")+'">'+r.dato+'</td><td class="num">'+r.reg+
 				'</td><td class="num">'+r.del+'</td><td><span class="pl">'+r.pl+'</span></td>'+
 				'<td class="slettcell"><button class="slett" title="Slett" aria-label="Slett">×</button></td>';
 			tr.querySelector(".slett").onclick=function(){
@@ -594,7 +606,13 @@
 	/* ===================== SKROTELISTE ===================== */
 	var sListe=$("sListe"), sAntall=$("sAntall"), skrotBadge=$("skrotBadge"), tomSkrot=$("tomSkrot");
 
+	var PLREKKE={ "Stor":0, "Medium":1, "Liten":2 };
 	function tegnSkrot(){
+		skrot.sort(function(a,b){
+			var pa=(a.pl in PLREKKE)?PLREKKE[a.pl]:3, pb=(b.pl in PLREKKE)?PLREKKE[b.pl]:3;
+			if(pa!==pb) return pa-pb;
+			return String(a.reg||"").localeCompare(String(b.reg||""),"nb");
+		});
 		sAntall.textContent="Skroteliste – "+skrot.length+(skrot.length===1?" del":" deler");
 		tomSkrot.disabled=skrot.length===0;
 		skrotBadge.classList.toggle("skjult",!skrot.length);
