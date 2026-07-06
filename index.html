@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Garanti & retur</title>
+<meta name="theme-color" content="#1F3864">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%231F3864'/><text x='50' y='72' font-size='58' text-anchor='middle' fill='white' font-family='Arial'>GR</text></svg>">
 <style>
 	:root{
 		--blaa:#1F3864; --blaa-2:#2f4f86; --bg:#eef1f5; --flate:#ffffff; --kant:#d7dde6;
@@ -22,7 +24,7 @@
 	.fane:hover{color:#fff}
 	.fane.aktiv{color:#fff;border-bottom-color:#fff}
 	.fane .badge{background:#e0a800;color:#1c1c1c;border-radius:999px;font-size:11px;font-weight:700;padding:1px 7px;margin-left:6px;vertical-align:1px}
-	.wrap{max-width:860px;margin:0 auto;padding:22px}
+	.wrap{max-width:1060px;margin:0 auto;padding:22px}
 	.skjult{display:none !important}
 	.f{display:flex;flex-direction:column;gap:5px}
 	.f label{font-size:12px;font-weight:600;color:var(--svak)}
@@ -36,9 +38,9 @@
 	.kopi:disabled{background:#9aa6b6;cursor:default}
 	.tom-knapp{background:var(--flate);color:var(--rod);border:1px solid #e3b9b9;border-radius:9px;padding:9px 16px;font-size:14px;font-weight:600;cursor:pointer}
 	.tom-knapp:disabled{opacity:.5;cursor:default}
-	.tblwrap{background:var(--flate);border:1px solid var(--kant);border-radius:12px;overflow:hidden}
+	.tblwrap{background:var(--flate);border:1px solid var(--kant);border-radius:12px;overflow-x:auto;-webkit-overflow-scrolling:touch}
 	table{border-collapse:collapse;width:100%;font-size:14px}
-	th,td{padding:9px 14px;text-align:left;border-bottom:1px solid #eef1f5}
+	th,td{padding:9px 14px;text-align:left;border-bottom:1px solid #eef1f5;white-space:nowrap}
 	th{background:var(--blaa);color:#fff;font-weight:600;font-size:12.5px;letter-spacing:.02em}
 	td.num{font-family:var(--mono)}
 	td .pl{font-size:12px;color:#fff;background:var(--blaa-2);padding:2px 9px;border-radius:999px}
@@ -82,6 +84,33 @@
 	.fjern.rod:hover{background:#8f2f2f}
 	.tag.b{background:#dbe7f7;border:1px solid #a9c4e8;color:var(--blaa)}
 	.info{background:var(--gul);border:1px solid var(--gul-kant);border-radius:10px;padding:12px 16px;font-size:14px;margin:0 0 18px}
+
+	/* ---- MOBIL ---- */
+	@media (max-width:700px){
+		.bar{padding:0 10px;gap:10px;flex-wrap:wrap}
+		.bar h1{font-size:15px;padding:10px 0 6px;white-space:nowrap;order:1}
+		.loggut{padding:5px 10px;font-size:12px;white-space:nowrap;order:2;margin-left:auto;align-self:center;margin-top:2px}
+		.faner{order:3;flex:1 1 100%;align-self:auto}
+		.fane{padding:10px 4px;font-size:13px;flex:1;text-align:center}
+		.fane .badge{padding:1px 5px;font-size:10px;margin-left:4px}
+		.wrap{padding:12px 10px}
+		.entry{padding:14px;gap:12px}
+		.entry .f{flex:1 1 44%;min-width:0}
+		.entry .f:first-child{flex:1 1 100%}
+		#reg,#del,#pl{width:100%}
+		.idag{width:100%}
+		.legg{flex:1 1 100%}
+		.liste-topp{flex-direction:column;align-items:stretch;gap:8px}
+		.liste-topp h2{text-align:left}
+		.handlinger{width:100%}
+		.handlinger .kopi{flex:1}
+		.handlinger .tom-knapp{flex:0 0 auto}
+		th,td{padding:8px 10px;font-size:13px}
+		#drop{padding:26px 14px}
+		.tall{gap:16px}
+		.tall .t b{font-size:18px}
+		.login-boks{width:calc(100vw - 32px);max-width:340px}
+	}
 	#login{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:10}
 	.login-boks{background:var(--flate);border:1px solid var(--kant);border-radius:14px;padding:30px 28px;width:340px;display:flex;flex-direction:column;gap:12px;box-shadow:0 8px 30px rgba(25,33,46,.08)}
 	.login-boks h2{margin:0 0 4px;font-size:18px;color:var(--blaa)}
@@ -177,7 +206,7 @@
 
 	<!-- ===================== SKROTELISTE ===================== -->
 	<div class="wrap skjult" id="view-skrot">
-		<div class="info">Deler under er merket <b>SKROTAS</b> i en rapport og ligger på lageret. Hent delen, trykk <b>Fjernet ✓</b> – da tas den ut av både skrotelista og lagerlista.</div>
+		<div class="info">Deler under er merket <b>SKROTAS</b> i en rapport og ligger på lageret. Hent delen og trykk <b>Skrotet ✓</b> – da tas den ut av både skrotelista og lagerlista.</div>
 		<div class="liste-topp" style="margin-top:0">
 			<h2 id="sAntall">Skroteliste – 0 deler</h2>
 			<div class="handlinger">
